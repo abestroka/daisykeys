@@ -6,7 +6,6 @@ using namespace daisy;
 // Use the daisy namespace to prevent having to type
 // daisy:: before all libdaisy functions
 // Declare a DaisySeed object called hardware
-DaisyPod pod;
 
 static DaisyPod   pod;
 static Oscillator osc;
