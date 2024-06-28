@@ -1,6 +1,8 @@
 #include "daisysp.h"
 #include "daisy_pod.h"
 
+#include "daisy_seed.h"
+
 using namespace daisysp;
 using namespace daisy;
 // Use the daisy namespace to prevent having to type
@@ -8,11 +10,14 @@ using namespace daisy;
 // Declare a DaisySeed object called hardware
 
 static DaisyPod   pod;
+static DaisySeed hw;
 static Oscillator osc;
 static AdEnv      ad;
 
 int   wave, mode;
 float vibrato, oscFreq;
+
+Switch button3;
 
 void Controls();
 
@@ -34,6 +39,9 @@ static void AudioCallback(AudioHandle::InterleavingInputBuffer  in,
                           size_t                                size)
 {
     Controls();
+
+    // button3.Debounce();
+    // hw.SetLed(button3.Pressed());
 
     for(size_t i = 0; i < size; i += 2)
     {
@@ -60,6 +68,9 @@ int main(void){
     osc.Init(sample_rate);
     ad.Init(sample_rate);
 
+    // Switch button3;
+    button3.Init(hw.GetPin(7), 1000);
+
     // Set parameters for oscillator
     osc.SetWaveform(osc.WAVE_SAW);
     wave = osc.WAVE_SAW;
@@ -77,6 +88,7 @@ int main(void){
     pod.StartAdc();
     pod.StartAudio(AudioCallback);
 
+
     while(1) {}
 
 }
@@ -84,15 +96,30 @@ int main(void){
 
 void UpdateButtons()
 {
+
+    button3.Debounce();
     if(pod.button1.RisingEdge())
     {
+        oscFreq = 440.0f;
         ad.Trigger();
     }
 
-    // if(pod.button2.RisingEdge())
-    // {
-    //     selfCycle = !selfCycle;
-    // }
+    if(pod.button2.RisingEdge())
+    {
+        oscFreq = 220.0f;
+        ad.Trigger();
+    }
+    if(button3.RisingEdge())
+    {
+
+        oscFreq = 1000.0f;
+        ad.Trigger();
+        // hw.SetLed(true);
+    }
+
+
+
+
 }
 
 void Controls()
