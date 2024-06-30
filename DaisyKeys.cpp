@@ -17,7 +17,14 @@ static AdEnv      ad;
 int   wave, mode;
 float vibrato, oscFreq;
 
-Switch button3;
+Switch C;
+Switch D;
+Switch E;
+Switch F;
+Switch G;
+Switch A;
+Switch B;
+Switch C2;
 
 void Controls();
 
@@ -68,8 +75,15 @@ int main(void){
     osc.Init(sample_rate);
     ad.Init(sample_rate);
 
-    // Switch button3;
-    button3.Init(hw.GetPin(7), 1000);
+    C2.Init(hw.GetPin(7), 1000);
+    B.Init(hw.GetPin(8), 1000);
+    A.Init(hw.GetPin(9), 1000);
+    G.Init(hw.GetPin(10), 1000);
+    F.Init(hw.GetPin(11), 1000);
+    E.Init(hw.GetPin(12), 1000);
+    D.Init(hw.GetPin(22), 1000);
+    C.Init(hw.GetPin(16), 1000);
+
 
     // Set parameters for oscillator
     osc.SetWaveform(osc.WAVE_SAW);
@@ -97,28 +111,87 @@ int main(void){
 void UpdateButtons()
 {
 
-    button3.Debounce();
-    if(pod.button1.RisingEdge())
-    {
-        oscFreq = 440.0f;
-        ad.Trigger();
-    }
+    C.Debounce();
+    D.Debounce();
+    E.Debounce();
+    F.Debounce();
+    G.Debounce();
+    A.Debounce();
+    B.Debounce();
+    C2.Debounce();
 
-    if(pod.button2.RisingEdge())
-    {
-        oscFreq = 220.0f;
-        ad.Trigger();
-    }
-    if(button3.RisingEdge())
+    // if(pod.button1.RisingEdge())
+    // {
+    //     oscFreq = 440.0f;
+    //     ad.Trigger();
+    // }
+
+    // if(pod.button2.RisingEdge())
+    // {
+    //     oscFreq = 220.0f;
+    //     ad.Trigger();
+    // }
+    if(C.RisingEdge())
     {
 
-        oscFreq = 1000.0f;
+        // oscFreq = 261.63f;
+        oscFreq = 277.18f; //C#
         ad.Trigger();
         // hw.SetLed(true);
     }
+    if(D.RisingEdge())
+    {
 
+        oscFreq = 293.66f;
+        ad.Trigger();
+        // hw.SetLed(true);
+    }
+    if(E.RisingEdge())
+    {
 
+        oscFreq = 329.63f;
+        ad.Trigger();
+        // hw.SetLed(true);
+    }
+    if(F.RisingEdge())
+    {
 
+        // oscFreq = 349.23f;
+        oscFreq = 369.99f; // F#
+
+        ad.Trigger();
+        // hw.SetLed(true);
+    }
+    if(G.RisingEdge())
+    {
+
+        oscFreq = 392.0f;
+        ad.Trigger();
+        // hw.SetLed(true);
+    }
+    if(A.RisingEdge())
+    {
+
+        oscFreq = 440.0f;
+        ad.Trigger();
+        // hw.SetLed(true);
+    }
+    if(B.RisingEdge())
+    {
+
+        // oscFreq = 493.88f;
+            oscFreq = 246.94f; //dropped octave
+
+        ad.Trigger();
+        // hw.SetLed(true);
+    }
+    if(C2.RisingEdge())
+    {
+
+        oscFreq = 523.25f;
+        ad.Trigger();
+        // hw.SetLed(true);
+    }
 
 }
 
