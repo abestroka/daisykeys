@@ -1,6 +1,8 @@
 #include "daisysp.h"
 #include "daisy_pod.h"
 
+#include "daisy_seed.h"
+
 using namespace daisysp;
 using namespace daisy;
 // Use the daisy namespace to prevent having to type
@@ -8,11 +10,21 @@ using namespace daisy;
 // Declare a DaisySeed object called hardware
 
 static DaisyPod   pod;
+static DaisySeed hw;
 static Oscillator osc;
 static AdEnv      ad;
 
 int   wave, mode;
 float vibrato, oscFreq;
+
+Switch C;
+Switch D;
+Switch E;
+Switch F;
+Switch G;
+Switch A;
+Switch B;
+Switch C2;
 
 void Controls();
 
@@ -34,6 +46,9 @@ static void AudioCallback(AudioHandle::InterleavingInputBuffer  in,
                           size_t                                size)
 {
     Controls();
+
+    // button3.Debounce();
+    // hw.SetLed(button3.Pressed());
 
     for(size_t i = 0; i < size; i += 2)
     {
@@ -60,6 +75,16 @@ int main(void){
     osc.Init(sample_rate);
     ad.Init(sample_rate);
 
+    C2.Init(hw.GetPin(7), 1000);
+    B.Init(hw.GetPin(8), 1000);
+    A.Init(hw.GetPin(9), 1000);
+    G.Init(hw.GetPin(10), 1000);
+    F.Init(hw.GetPin(11), 1000);
+    E.Init(hw.GetPin(12), 1000);
+    D.Init(hw.GetPin(22), 1000);
+    C.Init(hw.GetPin(16), 1000);
+
+
     // Set parameters for oscillator
     osc.SetWaveform(osc.WAVE_SAW);
     wave = osc.WAVE_SAW;
@@ -77,6 +102,7 @@ int main(void){
     pod.StartAdc();
     pod.StartAudio(AudioCallback);
 
+
     while(1) {}
 
 }
@@ -84,15 +110,89 @@ int main(void){
 
 void UpdateButtons()
 {
-    if(pod.button1.RisingEdge())
-    {
-        ad.Trigger();
-    }
+
+    C.Debounce();
+    D.Debounce();
+    E.Debounce();
+    F.Debounce();
+    G.Debounce();
+    A.Debounce();
+    B.Debounce();
+    C2.Debounce();
+
+    // if(pod.button1.RisingEdge())
+    // {
+    //     oscFreq = 440.0f;
+    //     ad.Trigger();
+    // }
 
     // if(pod.button2.RisingEdge())
     // {
-    //     selfCycle = !selfCycle;
+    //     oscFreq = 220.0f;
+    //     ad.Trigger();
     // }
+    if(C.RisingEdge())
+    {
+
+        // oscFreq = 261.63f;
+        oscFreq = 277.18f; //C#
+        ad.Trigger();
+        // hw.SetLed(true);
+    }
+    if(D.RisingEdge())
+    {
+
+        oscFreq = 293.66f;
+        ad.Trigger();
+        // hw.SetLed(true);
+    }
+    if(E.RisingEdge())
+    {
+
+        oscFreq = 329.63f;
+        ad.Trigger();
+        // hw.SetLed(true);
+    }
+    if(F.RisingEdge())
+    {
+
+        // oscFreq = 349.23f;
+        oscFreq = 369.99f; // F#
+
+        ad.Trigger();
+        // hw.SetLed(true);
+    }
+    if(G.RisingEdge())
+    {
+
+        oscFreq = 392.0f;
+        ad.Trigger();
+        // hw.SetLed(true);
+    }
+    if(A.RisingEdge())
+    {
+
+        oscFreq = 440.0f;
+        ad.Trigger();
+        // hw.SetLed(true);
+    }
+    if(B.RisingEdge())
+    {
+
+        // oscFreq = 493.88f;
+            oscFreq = 246.94f; //dropped octave
+
+        ad.Trigger();
+        // hw.SetLed(true);
+    }
+    if(C2.RisingEdge())
+    {
+
+        oscFreq = 523.25f;
+        ad.Trigger();
+        // hw.SetLed(true);
+    }
+
 }
 
 void Controls()
