@@ -11,8 +11,12 @@ static DaisySeed hw;
 static Oscillator osc;
 static AdEnv      ad;
 
-int   wave, mode;
+int   wave, mode, octave;
 float vibrato, oscFreq;
+
+// int octave;
+
+Switch octave_up, octave_down;
 
 Switch C;
 Switch CS;
@@ -67,6 +71,7 @@ int main(void){
     // global variables
     float sample_rate;
     oscFreq = 1000.0f;
+    octave = 1;
 
     //Init everything
     hw.Configure();
@@ -90,6 +95,9 @@ int main(void){
     D.Init(hw.GetPin(3), 1000);
     CS.Init(hw.GetPin(2), 1000);
     C.Init(hw.GetPin(1), 1000);
+
+    octave_up.Init(hw.GetPin(29), 1000);
+    octave_down.Init(hw.GetPin(30), 1000);
 
 
     // Set parameters for oscillator
@@ -134,19 +142,32 @@ void UpdateButtons()
     AS.Debounce();
     B.Debounce();
     C2.Debounce();
+    octave_up.Debounce();
+    octave_down.Debounce();
 
+     if(octave_up.RisingEdge())
+    {
+        octave = octave * 2;
+        // hw.SetLed(true);
+    }
+    if(octave_down.RisingEdge())
+    {
+
+        octave = octave / 2;
+
+        // hw.SetLed(true);
+    }   
     if(C.RisingEdge())
     {
 
-        oscFreq = 261.63f;
-        // oscFreq = 277.18f; //C#
+        oscFreq = 261.63f * octave;
         ad.Trigger();
         // hw.SetLed(true);
     }
     if(CS.RisingEdge())
     {
 
-        oscFreq = 277.18f;
+        oscFreq = 277.18f * octave;
         // oscFreq = 277.18f; //C#
         ad.Trigger();
         // hw.SetLed(true);
@@ -154,14 +175,14 @@ void UpdateButtons()
     if(D.RisingEdge())
     {
 
-        oscFreq = 293.66f;
+        oscFreq = 293.66f * octave;
         ad.Trigger();
         // hw.SetLed(true);
     }
     if(DS.RisingEdge())
     {
 
-        oscFreq = 311.13f;
+        oscFreq = 311.13f * octave;
         // oscFreq = 277.18f; //C#
         ad.Trigger();
         // hw.SetLed(true);
@@ -169,14 +190,14 @@ void UpdateButtons()
     if(E.RisingEdge())
     {
 
-        oscFreq = 329.63f;
+        oscFreq = 329.63f * octave;
         ad.Trigger();
         // hw.SetLed(true);
     }
     if(F.RisingEdge())
     {
 
-        oscFreq = 349.23f;
+        oscFreq = 349.23f * octave;
         // oscFreq = 369.99f; // F#
 
         ad.Trigger();
@@ -185,7 +206,7 @@ void UpdateButtons()
     if(FS.RisingEdge())
     {
 
-        oscFreq = 369.99f;
+        oscFreq = 369.99f * octave;
         // oscFreq = 277.18f; //C#
         ad.Trigger();
         // hw.SetLed(true);
@@ -193,46 +214,42 @@ void UpdateButtons()
     if(G.RisingEdge())
     {
 
-        oscFreq = 392.0f;
+        oscFreq = 392.0f * octave;
         ad.Trigger();
         // hw.SetLed(true);
     }
     if(GS.RisingEdge())
     {
 
-        oscFreq = 415.30f;
-        // oscFreq = 277.18f; //C#
+        oscFreq = 415.30f * octave;
         ad.Trigger();
         // hw.SetLed(true);
     }
     if(A.RisingEdge())
     {
 
-        oscFreq = 440.0f;
+        oscFreq = 440.0f * octave;
         ad.Trigger();
         // hw.SetLed(true);
     }
     if(AS.RisingEdge())
     {
 
-        oscFreq = 466.16f;
-        // oscFreq = 277.18f; //C#
+        oscFreq = 466.16f * octave;
         ad.Trigger();
         // hw.SetLed(true);
     }
     if(B.RisingEdge())
     {
 
-        oscFreq = 493.88f;
-            // oscFreq = 246.94f; //dropped octave
-
+        oscFreq = 493.88f * octave;
         ad.Trigger();
         // hw.SetLed(true);
     }
     if(C2.RisingEdge())
     {
 
-        oscFreq = 523.25f;
+        oscFreq = 523.25f * octave;
         ad.Trigger();
         // hw.SetLed(true);
     }
