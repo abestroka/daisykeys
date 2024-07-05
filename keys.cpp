@@ -10,13 +10,14 @@ using namespace daisy;
 static DaisySeed hw;
 static Oscillator osc;
 static AdEnv      ad;
-
-int   wave, mode, octave;
-float vibrato, oscFreq;
+// hhhh
+int   wave, mode;
+float vibrato, oscFreq, octave;
 
 // int octave;
 
-Switch octave_up, octave_down;
+Switch octave_up; 
+Switch octave_down;
 
 Switch C;
 Switch CS;
@@ -71,7 +72,7 @@ int main(void){
     // global variables
     float sample_rate;
     oscFreq = 1000.0f;
-    octave = 1;
+    octave = 1.0f;
 
     //Init everything
     hw.Configure();
