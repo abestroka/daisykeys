@@ -1,8 +1,10 @@
 # Project Name
-TARGET = DaisyKeys
+# TARGET = DaisyKeys
+TARGET = keys
 
 # Sources
-CPP_SOURCES = DaisyKeys.cpp
+# CPP_SOURCES = DaisyKeys.cpp
+CPP_SOURCES = keys.cpp
 
 # Library Locations
 LIBDAISY_DIR = ../DaisyExamples/libDaisy

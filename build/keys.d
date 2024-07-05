@@ -1,4 +1,4 @@
-build/DaisyKeys.o: DaisyKeys.cpp \
+build/keys.o: keys.cpp \
  ../DaisyExamples/libDaisy/Drivers/CMSIS/Device/ST/STM32H7xx/Include/stm32h7xx.h \
  ../DaisyExamples/libDaisy/Drivers/CMSIS/Device/ST/STM32H7xx/Include/stm32h750xx.h \
  ../DaisyExamples/libDaisy/Drivers/CMSIS/Include/core_cm7.h \
@@ -148,7 +148,6 @@ build/DaisyKeys.o: DaisyKeys.cpp \
  ../DaisyExamples/DaisySP/Source/Utility/metro.h \
  ../DaisyExamples/DaisySP/Source/Utility/samplehold.h \
  ../DaisyExamples/DaisySP/Source/Utility/smooth_random.h \
- ../DaisyExamples/libDaisy/src/daisy_pod.h \
  ../DaisyExamples/libDaisy/src/daisy_seed.h \
  ../DaisyExamples/libDaisy/src/daisy.h \
  ../DaisyExamples/libDaisy/src/daisy_core.h \
@@ -384,7 +383,6 @@ build/DaisyKeys.o: DaisyKeys.cpp \
 ../DaisyExamples/DaisySP/Source/Utility/metro.h:
 ../DaisyExamples/DaisySP/Source/Utility/samplehold.h:
 ../DaisyExamples/DaisySP/Source/Utility/smooth_random.h:
-../DaisyExamples/libDaisy/src/daisy_pod.h:
 ../DaisyExamples/libDaisy/src/daisy_seed.h:
 ../DaisyExamples/libDaisy/src/daisy.h:
 ../DaisyExamples/libDaisy/src/daisy_core.h:
