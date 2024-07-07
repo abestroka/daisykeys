@@ -8,13 +8,15 @@ using namespace daisy;
 // Declare a DaisySeed object called hardware
 
 static DaisySeed hw;
-static Oscillator osc;
+static Oscillator osc1, osc2, osc3;
 static AdEnv      ad;
-// hhhh
-int   wave, mode;
-float vibrato, oscFreq, octave;
+static AdcChannelConfig adcConfig[3];
+static AnalogControl pot1, pot2, pot3;
 
-// int octave;
+
+
+int   mode;
+float vibrato, oscFreq, octave;
 
 Switch octave_up; 
 Switch octave_down;
@@ -35,16 +37,22 @@ Switch C2;
 
 void Controls();
 
-void NextSamples(float &sig)
+void NextSamples(float &sig, float &sig1, float &sig2, float &sig3, float &pot_val_1, float &pot_val_2, float &pot_val_3)
 {
     float ad_out = ad.Process();
     // vibrato      = lfo.Process();
 
     // osc.SetFreq(oscFreq + vibrato);
-    osc.SetFreq(oscFreq);
+    osc1.SetFreq(oscFreq);
+    osc2.SetFreq(oscFreq);
+    osc3.SetFreq(oscFreq);
 
-    sig = osc.Process();
+    sig1 = osc1.Process();
+    sig2 = osc2.Process();
+    sig3 = osc3.Process();
+
     // sig = flt.Process(sig);
+    sig = (sig1 * pot_val_1) + (sig2 * pot_val_2) + (sig3 * pot_val_3);
     sig *= ad_out;
 }
 
@@ -54,11 +62,18 @@ static void AudioCallback(AudioHandle::InterleavingInputBuffer  in,
 {
     Controls();
 
+    float pot_val_1 = pot1.Process(); //pot 1 val
+    float pot_val_2 = pot2.Process(); //pot 2 val
+    float pot_val_3 = pot3.Process(); //pot 3 val
+
 
     for(size_t i = 0; i < size; i += 2)
     {
         float sig;
-        NextSamples(sig);
+        float sig1;
+        float sig2;
+        float sig3;
+        NextSamples(sig, sig1, sig2, sig3, pot_val_1, pot_val_2, pot_val_3);
 
         // left out
         out[i] = sig;
@@ -79,8 +94,21 @@ int main(void){
     hw.Init();
     hw.SetAudioBlockSize(4);
 
+    //pot1
+    adcConfig[0].InitSingle(hw.GetPin(28));
+    //pot2
+    adcConfig[1].InitSingle(hw.GetPin(27));
+    //pot3
+    adcConfig[2].InitSingle(hw.GetPin(26));
+
+    //init pots
+    hw.adc.Init(adcConfig, 3);
+
+
     sample_rate = hw.AudioSampleRate();
-    osc.Init(sample_rate);
+    osc1.Init(sample_rate);
+    osc2.Init(sample_rate);
+    osc3.Init(sample_rate);
     ad.Init(sample_rate);
 
     C2.Init(hw.GetPin(13), 1000);
@@ -100,12 +128,26 @@ int main(void){
     octave_up.Init(hw.GetPin(29), 1000);
     octave_down.Init(hw.GetPin(30), 1000);
 
+    pot1.Init(hw.adc.GetPtr(1), 1000);
+    pot2.Init(hw.adc.GetPtr(2), 1000);
+    pot3.Init(hw.adc.GetPtr(3), 1000);
 
-    // Set parameters for oscillator
-    osc.SetWaveform(osc.WAVE_SAW);
-    wave = osc.WAVE_SAW;
-    osc.SetFreq(440);
-    osc.SetAmp(1);
+
+    // Set parameters for oscillators
+    osc1.SetWaveform(Oscillator::WAVE_SIN);
+    // wave = osc.WAVE_SAW;
+    osc1.SetFreq(440);
+    osc1.SetAmp(1);
+
+    osc2.SetWaveform(Oscillator::WAVE_SAW);
+    // wave = osc.WAVE_SAW;
+    osc2.SetFreq(440);
+    osc2.SetAmp(1);
+
+    osc3.SetWaveform(Oscillator::WAVE_SQUARE);
+    // wave = osc.WAVE_SAW;
+    osc3.SetFreq(440);
+    osc3.SetAmp(1);
 
     //Set envelope parameters
     ad.SetTime(ADENV_SEG_ATTACK, 0.01);
@@ -184,7 +226,6 @@ void UpdateButtons()
     {
 
         oscFreq = 311.13f * octave;
-        // oscFreq = 277.18f; //C#
         ad.Trigger();
         // hw.SetLed(true);
     }
