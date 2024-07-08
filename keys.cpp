@@ -13,7 +13,8 @@ static AdEnv      ad;
 // hhhh
 int   wave, mode;
 float vibrato, oscFreq, octave;
-
+AdcChannelConfig adcConfig;
+AnalogControl knob;
 // int octave;
 
 Switch octave_up; 
@@ -100,6 +101,11 @@ int main(void){
     octave_up.Init(hw.GetPin(29), 1000);
     octave_down.Init(hw.GetPin(30), 1000);
 
+    adcConfig.InitSingle(hw.GetPin(16));
+    hw.adc.Init(&adcConfig, 1); 
+    knob.Init(hw.adc.GetPtr(1), 1000); //TODO: replace with ksample rate?
+    //Start reading values
+
 
     // Set parameters for oscillator
     osc.SetWaveform(osc.WAVE_SAW);
@@ -120,6 +126,7 @@ int main(void){
 
     //Start calling the audio callback
     hw.StartAudio(AudioCallback);
+    hw.adc.Start();
 
 
     while(1) {}
@@ -257,6 +264,14 @@ void UpdateButtons()
 
 }
 
+void UpdateKnobs()
+{
+    // float knobVal = knob.Process();
+    float knobVal = hw.adc.GetFloat(0);
+    float decayTime = knobVal * 2; //TODO: declare max_decay const float
+    ad.SetTime(ADENV_SEG_DECAY, decayTime);
+}
+
 void Controls()
 {
     // pod.ProcessAnalogControls();
@@ -264,7 +279,7 @@ void Controls()
 
     // UpdateEncoder();
 
-    // UpdateKnobs();
+    UpdateKnobs();
 
     // UpdateLeds();
 
