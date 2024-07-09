@@ -8,15 +8,13 @@ using namespace daisy;
 // Declare a DaisySeed object called hardware
 
 static DaisySeed hw;
-static Oscillator osc;
+static Oscillator osc1, osc2, osc3;
 static AdEnv      ad;
 // hhhh
 int   wave, mode;
-float vibrato, oscFreq, octave;
-// AdcChannelConfig adcConfig1, adcConfig2, adcConfig3, adcConfig4, adcConfig5;
+float vibrato, oscFreq, octave, saw_val, square_val, sin_val;
 AdcChannelConfig adcConfig[5];
-// AnalogControl knob;
-// int octave;
+
 
 Switch octave_up; 
 Switch octave_down;
@@ -43,9 +41,16 @@ void NextSamples(float &sig)
     // vibrato      = lfo.Process();
 
     // osc.SetFreq(oscFreq + vibrato);
-    osc.SetFreq(oscFreq);
+    osc1.SetFreq(oscFreq);
+    osc2.SetFreq(oscFreq);
+    osc3.SetFreq(oscFreq);
 
-    sig = osc.Process();
+    float sig1 = osc1.Process();
+    float sig2 = osc2.Process();
+    float sig3 = osc3.Process();
+
+    sig = (sig1 * saw_val) + (sig2 * square_val) + (sig3 * sin_val);
+
     // sig = flt.Process(sig);
     sig *= ad_out;
 }
@@ -82,7 +87,9 @@ int main(void){
     hw.SetAudioBlockSize(4);
 
     sample_rate = hw.AudioSampleRate();
-    osc.Init(sample_rate);
+    osc1.Init(sample_rate);
+    osc2.Init(sample_rate);
+    osc3.Init(sample_rate);
     ad.Init(sample_rate);
 
     C2.Init(hw.GetPin(13), 1000);
@@ -110,15 +117,21 @@ int main(void){
     adcConfig[3].InitSingle(hw.GetPin(27));
     adcConfig[4].InitSingle(hw.GetPin(26));
 
-    hw.adc.Init(adcConfig, 2); 
+    hw.adc.Init(adcConfig, 5); 
 
 
 
     // Set parameters for oscillator
-    osc.SetWaveform(osc.WAVE_SAW);
+    osc1.SetWaveform(Oscillator::WAVE_SAW);
     // wave = osc.WAVE_SAW;
-    osc.SetFreq(440);
-    osc.SetAmp(1);
+    osc1.SetFreq(440);
+    // osc.SetAmp(1);
+
+    osc2.SetWaveform(Oscillator::WAVE_SQUARE);
+    osc2.SetFreq(440);
+
+    osc3.SetWaveform(Oscillator::WAVE_SIN);
+    osc3.SetFreq(440);
 
     //Set envelope parameters
     ad.SetTime(ADENV_SEG_ATTACK, 0.01);
@@ -127,9 +140,6 @@ int main(void){
     ad.SetMin(0);
     ad.SetCurve(0.5);
 
-
-    // Start the adc
-    // hw.adc.Start();
 
     //Start calling the audio callback
     hw.StartAudio(AudioCallback);
@@ -281,6 +291,10 @@ void UpdateKnobs()
     float knobVal2 = hw.adc.GetFloat(1);
     float attackTime = knobVal2 * 2; //TODO: declare max_attack const float
     ad.SetTime(ADENV_SEG_ATTACK, attackTime);
+
+    saw_val = hw.adc.GetFloat(2);
+    square_val = hw.adc.GetFloat(3);
+    sin_val = hw.adc.GetFloat(4);
 }
 
 void Controls()
